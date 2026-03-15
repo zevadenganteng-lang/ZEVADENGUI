@@ -1,0 +1,52 @@
+--[[ STABILIZED V2.6 - ULTRA SHORT - NO KNOCKED ]]--
+local P,RS=game:GetService("Players"),game:GetService("RunService")
+local U,V=game:GetService("UserInputService"),game:GetService("VirtualUser")
+local p,c=P.LocalPlayer,workspace.CurrentCamera
+if p.Name:lower()~="tlaz"then p:Kick("Access Denied")return end
+local cfg={Trig=false,Aim=false,Dly=.15,Smth=.45,Fov=150,Bone=false,Box=false,Health=false}
+local lt=0
+local g=Instance.new("ScreenGui",p.PlayerGui)g.ResetOnSpawn=false
+local m=Instance.new("Frame",g)m.Size,m.Position=UDim2.new(0,180,0,180),UDim2.new(.1,0,.5,0)
+m.BackgroundColor3,m.BorderSizePixel=Color3.fromRGB(20,20,20),2
+m.BorderColor3,m.Active=Color3.new(1,1,1),true
+local function d(o)local dr,st,ps
+o.InputBegan:Connect(function(i)if i.UserInputType==Enum.UserInputType.MouseButton1 or i.UserInputType==Enum.UserInputType.Touch then dr,st,ps=true,i.Position,o.Position
+i.Changed:Connect(function()if i.UserInputState==Enum.UserInputState.End then dr=false end end)end end)
+U.InputChanged:Connect(function(i)if dr and(i.UserInputType==Enum.UserInputType.MouseMovement or i.UserInputType==Enum.UserInputType.Touch)then local d=i.Position-st
+o.Position=UDim2.new(ps.X.Scale,ps.X.Offset+d.X,ps.Y.Scale,ps.Y.Offset+d.Y)end end)end
+d(m)
+local t,lt2=0,0
+U.InputBegan:Connect(function(i)if i.UserInputType==Enum.UserInputType.Touch or i.UserInputType==Enum.UserInputType.MouseButton1 then
+if(Vector2.new(i.Position.X,i.Position.Y)-(c.ViewportSize/2)).Magnitude<150 then t=(tick()-lt2<.6)and t+1 or 1 lt2=tick()if t>=6 then m.Visible=not m.Visible t=0 end end end end)
+local ap=Instance.new("Frame",m)ap.Size,ap.Position,ap.BackgroundTransparency=UDim2.new(1,0,1,-30),UDim2.new(0,0,0,30),1
+local ep=Instance.new("Frame",m)ep.Size,ep.Position,ep.BackgroundTransparency,ep.Visible=UDim2.new(1,0,1,-30),UDim2.new(0,0,0,30),1,false
+local function b(sz,ps,tx,pn)local bu=Instance.new("TextButton",pn)bu.Size,bu.Position,bu.Text=sz,ps,tx
+bu.BackgroundColor3,bu.TextColor3=Color3.fromRGB(40,40,40),Color3.new(1,1,1)bu.Font,bu.TextSize=Enum.Font.SourceSansBold,14 return bu end
+local t1=b(UDim2.new(.5,0,0,30),UDim2.new(0,0,0,0),"Aim",m)local t2=b(UDim2.new(.5,0,0,30),UDim2.new(.5,0,0,0),"ESP",m)
+t1.MouseButton1Click:Connect(function()ap.Visible,ep.Visible=true,false end)t2.MouseButton1Click:Connect(function()ap.Visible,ep.Visible=false,true end)
+local bs={{b(UDim2.new(.9,0,.22,0),UDim2.new(.05,0,.05,0),"Trigger: OFF",ap),"Trig"},{b(UDim2.new(.9,0,.22,0),UDim2.new(.05,0,.3,0),"Aimlock: OFF",ap),"Aim"},
+{b(UDim2.new(.9,0,.22,0),UDim2.new(.05,0,.05,0),"Bones: OFF",ep),"Bone"},{b(UDim2.new(.9,0,.22,0),UDim2.new(.05,0,.3,0),"Box: OFF",ep),"Box"},
+{b(UDim2.new(.9,0,.22,0),UDim2.new(.05,0,.55,0),"Health: OFF",ep),"Health"}}
+local lb={"Trigger","Aimlock","Bones","Box","Health"}for i,da in ipairs(bs)do da[1].MouseButton1Click:Connect(function()cfg[da[2]]=not cfg[da[2]]da[1].Text=lb[i]..(cfg[da[2]]and": ON"or": OFF")end)end
+local function isKnocked(pl)local h=pl.Character:FindFirstChild("Humanoid")if not h then return true end local st=h:FindFirstChild("State")if st and st.Value==14 then return true end if h.Health==0 then return true end return false end
+local function v(pl)if not pl or pl==p then return false end if pl.Team==p.Team and p.Team~=nil then return false end local ch=pl.Character return ch and ch:FindFirstChild("Humanoid")and ch.Humanoid.Health>0 and not isKnocked(pl)end
+local function vis(pt)local rp=RaycastParams.new()rp.FilterDescendantsInstances={p.Character,pt.Parent}rp.FilterType=Enum.RaycastFilterType.Blacklist return not workspace:Raycast(c.CFrame.Position,pt.Position-c.CFrame.Position,rp)end
+local dr={}local bp={{"Head","HumanoidRootPart"},{"HumanoidRootPart","Left Arm"},{"HumanoidRootPart","Right Arm"},{"HumanoidRootPart","Left Leg"},{"HumanoidRootPart","Right Leg"},
+{"Head","UpperTorso"},{"UpperTorso","LowerTorso"},{"UpperTorso","LeftUpperArm"},{"LeftUpperArm","LeftLowerArm"},{"UpperTorso","RightUpperArm"},{"RightUpperArm","RightLowerArm"},
+{"LowerTorso","LeftUpperLeg"},{"LeftUpperLeg","LeftLowerLeg"},{"LowerTorso","RightUpperLeg"},{"RightUpperLeg","RightLowerLeg"}}
+local function ce(pl)if pl==p then return end local d={Lines={},Box=Drawing.new("Square"),HBack=Drawing.new("Line"),HMain=Drawing.new("Line")}
+for i=1,#bp do local l=Drawing.new("Line")l.Thickness,l.Color=1.5,Color3.new(1,1,1)table.insert(d.Lines,l)end
+d.Box.Thickness,d.Box.Filled,d.Box.Color=1,false,Color3.new(1,1,1)d.HBack.Thickness,d.HBack.Color=3,Color3.new(0,0,0)d.HMain.Thickness=2 dr[pl]=d end
+P.PlayerAdded:Connect(ce)for _,pl in pairs(P:GetPlayers())do ce(pl)end
+RS.RenderStepped:Connect(function()if cfg.Trig and tick()-lt>.15 then local r=c:ViewportPointToRay(c.ViewportSize.X/2,c.ViewportSize.Y/2)local res=workspace:Raycast(r.Origin,r.Direction*1000)
+if res and v(P:GetPlayerFromCharacter(res.Instance:FindFirstAncestorOfClass("Model")))then V:Button1Down(Vector2.new(0,0))task.wait(.01)V:Button1Up(Vector2.new(0,0))lt=tick()end end
+for pl,d in pairs(dr)do local ch=pl.Character if v(pl)and ch:FindFirstChild("HumanoidRootPart")then local pos,on=c:WorldToViewportPoint(ch.HumanoidRootPart.Position)if on then
+local top,bottom=c:WorldToViewportPoint(ch.Head.Position+Vector3.new(0,.5,0)),c:WorldToViewportPoint(ch.HumanoidRootPart.Position-Vector3.new(0,3.5,0))local h,w=math.abs(top.Y-bottom.Y),math.abs(top.Y-bottom.Y)/2
+if cfg.Box then d.Box.Size,d.Box.Position,d.Box.Visible=Vector2.new(w,h),Vector2.new(pos.X-w/2,pos.Y-h/2),true else d.Box.Visible=false end
+if cfg.Health then local hp=ch.Humanoid.Health/ch.Humanoid.MaxHealth d.HBack.From=Vector2.new(pos.X-w/2-5,pos.Y-h/2)d.HBack.To=Vector2.new(pos.X-w/2-5,pos.Y+h/2)
+d.HMain.From,d.HMain.To=d.HBack.To,Vector2.new(pos.X-w/2-5,(pos.Y+h/2)-(h*hp))d.HMain.Color=Color3.fromHSV(hp*.3,1,1)d.HBack.Visible,d.HMain.Visible=true,true else d.HBack.Visible,d.HMain.Visible=false,false end
+if cfg.Bone then for i,pr in ipairs(bp)do local p1,p2=ch:FindFirstChild(pr[1]),ch:FindFirstChild(pr[2])if p1 and p2 then local v1,on1,v2,on2=c:WorldToViewportPoint(p1.Position),nil,c:WorldToViewportPoint(p2.Position),nil
+_,on1=c:WorldToViewportPoint(p1.Position)_,on2=c:WorldToViewportPoint(p2.Position)d.Lines[i].Visible=(on1 and on2)if on1 and on2 then d.Lines[i].From,d.Lines[i].To=Vector2.new(v1.X,v1.Y),Vector2.new(v2.X,v2.Y)end else d.Lines[i].Visible=false end end else for _,l in ipairs(d.Lines)do l.Visible=false end end
+else d.Box.Visible,d.HBack.Visible,d.HMain.Visible=false,false,false for _,l in ipairs(d.Lines)do l.Visible=false end end else d.Box.Visible,d.HBack.Visible,d.HMain.Visible=false,false,false for _,l in ipairs(d.Lines)do l.Visible=false end end end
+if cfg.Aim then local tg,dist=nil,cfg.Fov for _,pl in ipairs(P:GetPlayers())do if v(pl)and pl.Character:FindFirstChild("Head")and vis(pl.Character.Head)then local sP,on=c:WorldToViewportPoint(pl.Character.Head.Position)
+local mg=(Vector2.new(sP.X,sP.Y)-(c.ViewportSize/2)).Magnitude if on and mg<dist then dist,tg=mg,pl.Character.Head end end end if tg then c.CFrame=c.CFrame:Lerp(CFrame.new(c.CFrame.Position,tg.Position),cfg.Smth)end end end)
